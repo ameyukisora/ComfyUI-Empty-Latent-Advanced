@@ -40,12 +40,15 @@ class EmptyLatentAdvancedSelector:
             "required": {
                 "Resolution": (list(cls.RESOLUTIONS.keys()), {"default": "▯ 832×1216 (SDXL - 2:3)"}),
                 "Mode": (["Use Preset", "Override"], {"default": "Use Preset"}),
-                # On/Off Toggle
-                "Ratio Lock": ("BOOLEAN", {"default": True, "label_on": "On", "label_off": "Off"}),
+                
+                # Changed "Ratio Lock" to "Ratio_Lock"
+                "Ratio_Lock": ("BOOLEAN", {"default": True, "label_on": "On", "label_off": "Off"}),
                 
                 "Width": ("INT", {"default": 832, "min": 64, "max": 16384, "step": 8}),
                 "Height": ("INT", {"default": 1216, "min": 64, "max": 16384, "step": 8}),
-                "Batch Size": ("INT", {"default": 1, "min": 1, "max": 64}),
+                
+                # Changed "Batch Size" to "Batch_Size"
+                "Batch_Size": ("INT", {"default": 1, "min": 1, "max": 64}),
             },
         }
     
@@ -61,10 +64,10 @@ class EmptyLatentAdvancedSelector:
         final_height = height = 0
 
         if Mode == "Use Preset":
-            # Ignore Width/Height inputs completely, trust dictionary
+            # Use Preset: Trust the dictionary
             final_width, final_height = preset_width, preset_height
         else:
-            # Override Mode
+            # Override: Use inputs
             if Ratio_Lock:
                 ratio = preset_width / preset_height
                 final_width = self._round_to_8(Width)

@@ -40,13 +40,14 @@ app.registerExtension({
         
         const findWidget = (name) => node.widgets.find(w => w.name === name);
 
+        // Updated to use underscores to match Python
         const widgets = {
             preset: findWidget("Resolution"),
             mode: findWidget("Mode"),
-            ratioLock: findWidget("Ratio Lock"),
+            ratioLock: findWidget("Ratio_Lock"), 
             width: findWidget("Width"),
             height: findWidget("Height"),
-            batch: findWidget("Batch Size")
+            batch: findWidget("Batch_Size")
         };
         
         if (!widgets.preset) return;
@@ -83,15 +84,13 @@ app.registerExtension({
             
             if (show) {
                 // Restore
-                // Use 'toggle' for boolean inputs, 'number' for INT inputs
-                widget.type = widget.origType || (widget.name === "Ratio Lock" ? "toggle" : "number");
-                // Delete the override logic, let it compute size naturally
+                // Use 'toggle' for boolean inputs (Ratio_Lock), 'number' for INT inputs
+                widget.type = widget.origType || (widget.name === "Ratio_Lock" ? "toggle" : "number");
                 delete widget.computeSize; 
             } else {
                 // Hide
                 if (!widget.origType) widget.origType = widget.type;
                 widget.type = "HIDDEN";
-                // Force height to 0 (with negative margin to collapse padding)
                 widget.computeSize = () => [0, -4];
             }
         }
@@ -104,16 +103,11 @@ app.registerExtension({
             
             targetWidgets.forEach(w => toggleWidget(w, isOverride));
 
-            // 1. Calculate the new ideal size for the node
-            // We use a small buffer (+4) for aesthetic spacing at the bottom
+            // Resize Node
             const sz = node.computeSize();
             const newHeight = sz[1] + 4;
 
-            // 2. Set the size. Keep width constant, update height.
             node.setSize([node.size[0], newHeight]);
-            
-            // 3. FORCE REDRAW (Fixes the visual "lag" or artifacts)
-            // This tells the main graph engine to clear and repaint everything immediately
             app.graph.setDirtyCanvas(true, true);
         }
 
@@ -128,9 +122,6 @@ app.registerExtension({
 
         widgets.preset.callback = createCallback(widgets.preset.callback, () => {
             const [w, h] = RESOLUTIONS[widgets.preset.value] || [832, 1216];
-            
-            // Even in Preset mode, we background update the values 
-            // so if user switches to Override, the numbers start correct
             isUpdating = true;
             widgets.width.value = w;
             widgets.height.value = h; 
@@ -138,7 +129,6 @@ app.registerExtension({
         });
         
         widgets.mode.callback = createCallback(widgets.mode.callback, () => {
-            // Sync values before showing inputs to ensure data consistency
             if (widgets.mode.value === "Use Preset") {
                  const [w, h] = RESOLUTIONS[widgets.preset.value] || [832, 1216];
                  isUpdating = true;
@@ -146,12 +136,10 @@ app.registerExtension({
                  widgets.height.value = h;
                  isUpdating = false;
             } else if (widgets.mode.value === "Override") {
-                // If switching to Override, ensure Ratio Logic is respected immediately
                  if(widgets.ratioLock.value) {
                     calculateDimension("Width");
                  }
             }
-            // Apply visual changes
             updateLayout();
         });
 
@@ -172,11 +160,8 @@ app.registerExtension({
         });
 
         // --- Init ---
-        // Slight delay to ensure node is attached to graph before resizing
         setTimeout(() => {
             updateLayout();
-            
-            // Ensure data is sync on load
             if(widgets.mode.value === "Use Preset"){
                  const [w, h] = RESOLUTIONS[widgets.preset.value] || [832, 1216];
                  widgets.width.value = w;
