@@ -41,14 +41,12 @@ class EmptyLatentAdvancedSelector:
                 "Resolution": (list(cls.RESOLUTIONS.keys()), {"default": "▯ 832×1216 (SDXL - 2:3)"}),
                 "Mode": (["Use Preset", "Override"], {"default": "Use Preset"}),
                 
-                # Changed "Ratio Lock" to "Ratio_Lock"
-                "Ratio_Lock": ("BOOLEAN", {"default": True, "label_on": "On", "label_off": "Off"}),
+                "Ratio Lock": ("BOOLEAN", {"default": True, "label_on": "On", "label_off": "Off"}),
                 
                 "Width": ("INT", {"default": 832, "min": 64, "max": 16384, "step": 8}),
                 "Height": ("INT", {"default": 1216, "min": 64, "max": 16384, "step": 8}),
                 
-                # Changed "Batch Size" to "Batch_Size"
-                "Batch_Size": ("INT", {"default": 1, "min": 1, "max": 64}),
+                "Batch Size": ("INT", {"default": 1, "min": 1, "max": 64}),
             },
         }
     
@@ -57,27 +55,28 @@ class EmptyLatentAdvancedSelector:
     FUNCTION = "generate"
     CATEGORY = "latent"
     
-    def generate(self, Resolution, Mode, Ratio_Lock, Width, Height, Batch_Size):
+    # Use **kwargs 
+    def generate(self, Resolution, Mode, Width, Height, **kwargs):
+        ratio_lock = kwargs.get("Ratio Lock", True)
+        batch_size = kwargs.get("Batch Size", 1)
+        
         preset_width, preset_height = self.RESOLUTIONS[Resolution]
         
         final_width = width = 0
         final_height = height = 0
 
         if Mode == "Use Preset":
-            # Use Preset: Trust the dictionary
             final_width, final_height = preset_width, preset_height
         else:
-            # Override: Use inputs
-            if Ratio_Lock:
+            if ratio_lock:
                 ratio = preset_width / preset_height
                 final_width = self._round_to_8(Width)
-                # Calculate height based on width and preset ratio
                 final_height = self._round_to_8(final_width / ratio)
             else:
                 final_width = self._round_to_8(Width)
                 final_height = self._round_to_8(Height)
         
-        latent = torch.zeros([Batch_Size, 4, final_height // 8, final_width // 8], dtype=torch.float32, device="cpu")
+        latent = torch.zeros([batch_size, 4, final_height // 8, final_width // 8], dtype=torch.float32, device="cpu")
         
         return ({"samples": latent}, final_width, final_height)
     

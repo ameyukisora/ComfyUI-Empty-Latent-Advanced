@@ -40,14 +40,14 @@ app.registerExtension({
         
         const findWidget = (name) => node.widgets.find(w => w.name === name);
 
-        // Updated to use underscores to match Python
         const widgets = {
             preset: findWidget("Resolution"),
             mode: findWidget("Mode"),
-            ratioLock: findWidget("Ratio_Lock"), 
+            // Revert back to Space naming
+            ratioLock: findWidget("Ratio Lock"),
             width: findWidget("Width"),
             height: findWidget("Height"),
-            batch: findWidget("Batch_Size")
+            batch: findWidget("Batch Size")
         };
         
         if (!widgets.preset) return;
@@ -77,15 +77,15 @@ app.registerExtension({
             isUpdating = false;
         }
         
-        // --- Layout & Visibility Manager ---
+        // --- Layout & Visibility ---
 
         function toggleWidget(widget, show) {
             if (!widget) return;
             
             if (show) {
                 // Restore
-                // Use 'toggle' for boolean inputs (Ratio_Lock), 'number' for INT inputs
-                widget.type = widget.origType || (widget.name === "Ratio_Lock" ? "toggle" : "number");
+                // Match name string logic exactly
+                widget.type = widget.origType || (widget.name === "Ratio Lock" ? "toggle" : "number");
                 delete widget.computeSize; 
             } else {
                 // Hide
@@ -97,13 +97,10 @@ app.registerExtension({
 
         function updateLayout() {
             const isOverride = widgets.mode.value === "Override";
-            
-            // Widgets to Hide/Show
             const targetWidgets = [widgets.ratioLock, widgets.width, widgets.height];
             
             targetWidgets.forEach(w => toggleWidget(w, isOverride));
 
-            // Resize Node
             const sz = node.computeSize();
             const newHeight = sz[1] + 4;
 
