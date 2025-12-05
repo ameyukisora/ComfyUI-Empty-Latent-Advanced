@@ -1,6 +1,12 @@
-# ComfyUI Empty Latent Advanced
+# 📐 Empty Latent Advanced
 
-An advanced Empty Latent image generator for ComfyUI with visual aspect ratio presets and a smart, foldable UI.
+An advanced Empty Latent image generator for ComfyUI with visual aspect ratio presets and a smart, foldable UI. 
+
+You can find it in right-click - Add Node - Latent - 📐 Empty Latent Advanced
+
+<p align="center">
+  <img src="./assets/preview.png" width="300" />
+</p>
 
 ## Features
 
