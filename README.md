@@ -16,6 +16,12 @@ You can find it in right-click - Add Node - Latent - 📐 Empty Latent Advanced
 *   **Override Mode:** Allows custom dimensions with an optional Aspect Ratio Lock.
 *   **Zero-Lag:** Optimized for performance, no unnecessary GPU formatting.
 
+## Installation
+
+### via ComfyUI Manager (Recommended)
+1.  Search for `Empty Latent Advanced` in ComfyUI Manager.
+2.  Install and Restart ComfyUI.
+
 ### Manual Installation
 1.  Navigate to your ComfyUI `custom_nodes` folder.
 2.  Clone this repository:
